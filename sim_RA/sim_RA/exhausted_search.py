@@ -6,7 +6,7 @@ import xlrd
 import math
 import os
 
-def _exhausted_search(Z, RB_needed, rate, rate_pair, time_threshold):
+def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, time_threshold):
 
     num_bs, num_subcarriers, num_time_slots, num_users, num_users_i, num_itf_users, itf_idx_i = _setting()
 
@@ -129,6 +129,12 @@ def _exhausted_search(Z, RB_needed, rate, rate_pair, time_threshold):
             #print('BS', i,'sumrate :', round(sumrate, 4))
             #print()
             sumrate_i.append(round(sumrate, 4))
+        for f in all_subcarriers:
+            for t in all_time_slots:
+                #j = (i + 1) % 2
+                if alloc_RB_i[0][f][t] != 'x' and alloc_RB_i[1][f][t] != 'x':
+                    sumrate_i[0] -= rate_reduce_ij[alloc_RB_i[0][f][t]][alloc_RB_i[1][f][t]] / 10000
+                    sumrate_i[1] -= rate_reduce_ji[alloc_RB_i[1][f][t]][alloc_RB_i[0][f][t]] / 10000
         '''
         # find X 
         x_RB_i = []

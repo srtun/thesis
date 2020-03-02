@@ -31,7 +31,7 @@ def _setting():
 
     #print(itf_idx_i)
 
-    num_subcarriers = 5
+    num_subcarriers = 6
     num_time_slots = 2
     all_users = range(num_users)
     all_subcarriers = range(num_subcarriers)

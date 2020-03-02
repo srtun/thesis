@@ -8,8 +8,8 @@ import math
 import os
 
 def _greedy(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji):
-    # [ ] TODO: 2/27 for p: compare single and pair ??
     # [ ] TODO: 2/27 check wasted RB after all alloc??
+    # [ ] TODO: 3/2 comparison unit rb
     # [x] TODO: method which not be taken will waste the traffic demands
     # [x] TODO: better method may have wasted RB
     # [ ] TODO: pilot check

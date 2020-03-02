@@ -23,7 +23,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="exhausted_search.py" />
-    <Compile Include="greedy.py" />
+    <Compile Include="greedy_freq.py" />
+    <Compile Include="greedy_pilot.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="setting.py" />
     <Compile Include="sim_RA.py" />
     <Compile Include="test.py" />

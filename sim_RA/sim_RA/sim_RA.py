@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 from ortools.sat.python import cp_model
 from setting import _setting
 from exhausted_search import _exhausted_search
-from greedy import _greedy
+from greedy_freq import _greedy
+from greedy_pilot import _greedy_pilot
 from test import _test
 import random
 import xlrd
@@ -73,7 +74,7 @@ def main():
     for i in all_bs:
         for u in all_users_i[i]:
             #rate[i][u] = random.randint(3, 6) * 10000
-            #rate[i][u] = 20000
+            #rate[i][u] = 50000
             pass
     #rate[0][3] = 50000
     #rate[1][3] = 50000
@@ -89,7 +90,7 @@ def main():
             reduce = 0
             if u in itf_idx_i[0] and v in itf_idx_i[1]:
                 reduce = random.randint(5000 , 7500)
-                #reduce = 0
+                #reduce = 10000
 
             rate_reduce_ij[u].append(reduce)
     print('reduction_ij:')
@@ -103,7 +104,7 @@ def main():
             reduce = 0
             if u in itf_idx_i[0] and v in itf_idx_i[1]:
                 reduce = random.randint(5000 , 7500)
-                #reduce = 0
+                #reduce = 10000
 
             rate_reduce_ji[v].append(reduce)
     print('reduction_ji:')
@@ -235,7 +236,7 @@ def main():
     '''
     
     time_threshold = 10.0
-    alloc_RB_i, RB_waste_i, RB_used_i, sumrate_i, objective_value, wall_time = _exhausted_search(Z, RB_needed, rate, rate_pair, time_threshold)
+    alloc_RB_i, RB_waste_i, RB_used_i, sumrate_i, objective_value, wall_time = _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, time_threshold)
     #print('exhausted')
     #print(alloc_RB_i)
     #greedy_alloc_RB_i, greedy_sumrate_i, greedy_RB_used_i = _greedy(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji)
@@ -297,10 +298,10 @@ def main():
                     continue
                 if i == 0:
                     print(pair_user_RB[v], 'RB with rate', (rate[i][u] - rate_reduce_ij[u][v]) / 10000, ',(', pair_user_RB[v], '/', RB_used_i[i][u], ')RB (pair with user', v, ')')
-                    sumrate_i[i] -= rate_reduce_ij[u][v] * pair_user_RB[v] / 10000
+                    #sumrate_i[i] -= rate_reduce_ij[u][v] * pair_user_RB[v] / 10000
                 else:
                     print(pair_user_RB[v], 'RB with rate', (rate[i][u] - rate_reduce_ji[u][v]) / 10000, ',(', pair_user_RB[v], '/', RB_used_i[i][u], ')RB (pair with user', v, ')')
-                    sumrate_i[i] -= rate_reduce_ji[u][v] * pair_user_RB[v] / 10000
+                    #sumrate_i[i] -= rate_reduce_ji[u][v] * pair_user_RB[v] / 10000
                 #print(pair_user_RB[v], 'RB with rate', (rate[i][u] - rate_reduce[u][v] / 2) / 10000, ',(', pair_user_RB[v], '/', RB_used_i[i][u], ')RB (pair with user', v, ')')
                 #sumrate_i[i] -= rate_reduce[u][v] / 2 * pair_user_RB[v] / 10000
             muting_RB = RB_used_i[i][u] - sum(pair_user_RB)
@@ -332,7 +333,7 @@ def main():
     
     # greedy
     RB_needed_cp = deepcopy(RB_needed)
-    greedy_alloc_RB_i, greedy_sumrate_i, greedy_RB_used_i = _greedy(match, RB_needed_cp, rate, rate_pair, rate_reduce_ij, rate_reduce_ji)
+    greedy_alloc_RB_i, greedy_sumrate_i, greedy_RB_used_i = _greedy_pilot(match, RB_needed_cp, rate, rate_pair, rate_reduce_ij, rate_reduce_ji)
     #print('greedy:')
     #print(greedy_alloc_RB_i)
 
@@ -400,7 +401,7 @@ def main():
             #print()
         print('BS', i, 'sumrate:', round(greedy_sumrate_i[i], 4))
     print()
-    print('Greedy sumrate =', round(sum(sumrate_i), 4) )
+    print('Greedy sumrate =', round(sum(greedy_sumrate_i), 4) )
 
     print()
     print('Comparison')
