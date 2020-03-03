@@ -9,6 +9,7 @@ import os
 def _greedy_pilot(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji):
     # [ ] TODO: 2/27 check wasted RB after all alloc??
     # [ ] TODO: 3/2 with pilot number, pair user only choose 1 pair?
+    # [ ] TODO: 3/3 itf user need to be added in single queue
     # [x] TODO: method which not be taken will waste the traffic demands
     # [x] TODO: better method may have wasted RB
     # [ ] TODO: pilot check
@@ -47,7 +48,7 @@ def _greedy_pilot(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
     #sort all user and delete single users
     queue_pair = sorted(range(len(queue_pair)), key=lambda u: queue_pair[u])
     queue_pair = queue_pair[len(queue_pair) - num_itf_users:]
-    print(queue_pair)
+    #print(queue_pair)
     
    
     sumrate_i = [0 for i in all_bs]   
@@ -224,7 +225,7 @@ def _greedy_pilot(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
                                 #pair_RB_return[0][queue_pair[-1]] += 1
                                 #pair_RB_return[1][match[0, queue_pair[-1]]] += 1
             f -= pilot
-            print(sumrate_i)
+            #print(sumrate_i)
             pass
     RB_used_i = [[0 for u in all_users_i[i]] for i in all_bs]
     #print(RB_used_i)
@@ -233,7 +234,10 @@ def _greedy_pilot(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
             for f in all_subcarriers:
                 if alloc_RB_i[i][t][f] != 'x':
                     RB_used_i[i][ alloc_RB_i[i][t][f] ] += 1 
-               
+    #transpose alloc_RB_i[i][t][f] into alloc_RB_i[i][f][t]
+    for i in all_bs:
+        alloc_RB_i[i] = list(map(list, zip(*alloc_RB_i[i])))
+        pass
     #a = 0
     return alloc_RB_i, sumrate_i, RB_used_i
 

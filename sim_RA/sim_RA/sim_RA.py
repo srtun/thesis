@@ -4,8 +4,9 @@ import matplotlib.pyplot as plt
 from ortools.sat.python import cp_model
 from setting import _setting
 from exhausted_search import _exhausted_search
-from greedy_freq import _greedy
+from greedy_freq import _greedy_freq
 from greedy_pilot import _greedy_pilot
+from print_RB import _print_RB
 from test import _test
 import random
 import xlrd
@@ -24,7 +25,7 @@ def main():
     # [ ] TODO: generalize??
     
     
-    #_test()
+    _test()
 
     # read mcs table file
     book = xlrd.open_workbook('CQI_index.xlsx')
@@ -237,88 +238,15 @@ def main():
     
     time_threshold = 10.0
     alloc_RB_i, RB_waste_i, RB_used_i, sumrate_i, objective_value, wall_time = _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, time_threshold)
-    #print('exhausted')
-    #print(alloc_RB_i)
-    #greedy_alloc_RB_i, greedy_sumrate_i, greedy_RB_used_i = _greedy(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji)
-    #print('greedy:')
-    #print(greedy_alloc_RB_i)
-    
-    #RB_waste_i = []
-    #RB_used_i = []
-    #sumrate_i = []
-    muting_RB_i = []
-    unallocated_RB = 0
-    for i in all_bs:
-        muting_RB_i.append(0)
-        print()
-        print ('BS', i)
-        print ('Total RB:',  num_subcarriers * num_time_slots)
-        #print('sumrate:', sumrate_i[i])
-        print()
-        for f in all_subcarriers:
-            for t in all_time_slots:
-                j = (i + 1) % 2
-                # count for unallocate RB
-                if alloc_RB_i[i][f][t] == 'x' and alloc_RB_i[j][f][t] == 'x':
-                    unallocated_RB += 1
-                # count for muting RB
-                if alloc_RB_i[i][f][t] == 'x' and alloc_RB_i[j][f][t] != 'x':
-                    for u in itf_idx_i[j]:
-                        if alloc_RB_i[j][f][t] == u:
-                            muting_RB_i[i] += 1
-                            alloc_RB_i[i][f][t] = 'm'
-                            break
-                print(alloc_RB_i[i][f][t],' ' , sep = '',end = '')
-            print()
-        print()
-        print('RB wastes:', RB_waste_i[i])
-        print('muting RB:', muting_RB_i[i])
-        print()
-        for u in all_users_i[i]:
-            if u in itf_idx_i[i]: #itf user
-                break
-            print('user', u, 'uses', RB_used_i[i][u], 'RB with rate', rate[i][u] / 10000, ',(', RB_used_i[i][u], '/', RB_needed[i][u], ')RB')
-        j = (i + 1) % 2
-        for u in itf_idx_i[i]:      #itf user
-            print('user', u, 'uses', RB_used_i[i][u],  'RB ,(', RB_used_i[i][u], '/', RB_needed[i][u], ')RB')
-            RB_SIC = 0
-            pair_user_RB = [0 for v in all_users_i[j]] 
-            for f in all_subcarriers:
-                for t in all_time_slots:
-                    if alloc_RB_i[i][f][t] == 'x' or alloc_RB_i[i][f][t] == 'm' or alloc_RB_i[i][f][t] != u:
-                        continue
-                    if alloc_RB_i[j][f][t] == 'x' or alloc_RB_i[j][f][t] == 'm':
-                        continue
-                    else:
-                        v = alloc_RB_i[j][f][t]
-                        pair_user_RB[v] += 1
-            #print(pair_user_RB)
-            for v in all_users_i[j]:
-                if pair_user_RB[v] == 0:
-                    continue
-                if i == 0:
-                    print(pair_user_RB[v], 'RB with rate', (rate[i][u] - rate_reduce_ij[u][v]) / 10000, ',(', pair_user_RB[v], '/', RB_used_i[i][u], ')RB (pair with user', v, ')')
-                    #sumrate_i[i] -= rate_reduce_ij[u][v] * pair_user_RB[v] / 10000
-                else:
-                    print(pair_user_RB[v], 'RB with rate', (rate[i][u] - rate_reduce_ji[u][v]) / 10000, ',(', pair_user_RB[v], '/', RB_used_i[i][u], ')RB (pair with user', v, ')')
-                    #sumrate_i[i] -= rate_reduce_ji[u][v] * pair_user_RB[v] / 10000
-                #print(pair_user_RB[v], 'RB with rate', (rate[i][u] - rate_reduce[u][v] / 2) / 10000, ',(', pair_user_RB[v], '/', RB_used_i[i][u], ')RB (pair with user', v, ')')
-                #sumrate_i[i] -= rate_reduce[u][v] / 2 * pair_user_RB[v] / 10000
-            muting_RB = RB_used_i[i][u] - sum(pair_user_RB)
-            if muting_RB != 0:
-                print(muting_RB, 'RB with rate', (rate[i][u])/ 10000, ',(', muting_RB, '/', RB_used_i[i][u], ')RB (muting)')
-            print()
-        print('BS', i, 'sumrate:', round(sumrate_i[i]))
-        
-    print('sumrate old =', round(sum(sumrate_i), 4) )
-    
-    # Statistics.
-    '''
-    print()
-    print('sumrate 0 + 1 =', round(sum(sumrate_i), 4) )
-    print('objective function =', objective_value / 10000)
     if round(sum(sumrate_i),4) != objective_value / 10000:
         print('objective function wrong!!')
+    #print('exhausted')
+    #print(alloc_RB_i)
+    
+    _print_RB(alloc_RB_i, RB_needed, rate, rate_reduce_ij, rate_reduce_ji, sumrate_i, 'exhausted search')
+
+    # Statistics.
+    '''
     print()
     print('Statistics')
     print('  - sumrate = %f' % (objective_value / 10000), '(out of', num_bs * num_subcarriers * num_time_slots, 'RBs)')
@@ -328,81 +256,15 @@ def main():
     print('unallocated RB:', unallocated_RB)
     #os.system('pause')
     '''
-    #else:
-        #print('no feasible solution')
     
     # greedy
     RB_needed_cp = deepcopy(RB_needed)
     greedy_alloc_RB_i, greedy_sumrate_i, greedy_RB_used_i = _greedy_pilot(match, RB_needed_cp, rate, rate_pair, rate_reduce_ij, rate_reduce_ji)
+    _print_RB(greedy_alloc_RB_i, RB_needed, rate, rate_reduce_ij, rate_reduce_ji, sumrate_i, 'greedy_pilot')
+
     #print('greedy:')
     #print(greedy_alloc_RB_i)
-
-    greedy_muting_RB_i = []
-    greedy_unallocated_RB = 0
-    for i in all_bs:
-        greedy_muting_RB_i.append(0)
-        print()
-        print ('BS', i)
-        print ('Total RB:',  num_subcarriers * num_time_slots)
-        #print('sumrate:', sumrate_i[i])
-        print()
-        for f in all_subcarriers:
-            for t in all_time_slots:
-                j = (i + 1) % 2
-                # count for unallocate RB
-                if greedy_alloc_RB_i[i][t][f] == -1 and greedy_alloc_RB_i[j][t][f] == -1:
-                    greedy_unallocated_RB += 1
-                # count for muting RB
-                if greedy_alloc_RB_i[i][t][f] == -1 and greedy_alloc_RB_i[j][t][f] != -1:
-                    for u in itf_idx_i[j]:
-                        if greedy_alloc_RB_i[j][t][f] == u:
-                            greedy_muting_RB_i[i] += 1
-                            greedy_alloc_RB_i[i][t][f] = 'm'
-                            break
-                print(greedy_alloc_RB_i[i][t][f],' ' , sep = '',end = '')
-            print()
-        print()
-        #print('RB wastes:', RB_waste_i[i])
-        print('muting RB:', greedy_muting_RB_i[i])
-        print()
-        for u in all_users_i[i]:
-            if u in itf_idx_i[i]: #itf user
-                break
-            print('user', u, 'uses', greedy_RB_used_i[i][u], 'RB with rate', rate[i][u] / 10000, ',(', greedy_RB_used_i[i][u], '/', RB_needed[i][u], ')RB')
-        j = (i + 1) % 2
-        for u in itf_idx_i[i]:      #itf user
-            print('user', u, 'uses', greedy_RB_used_i[i][u],  'RB ,(', greedy_RB_used_i[i][u], '/', RB_needed[i][u], ')RB')
-            RB_SIC = 0
-            pair_user_RB = [0 for v in all_users_i[j]] 
-            for f in all_subcarriers:
-                for t in all_time_slots:
-                    if greedy_alloc_RB_i[i][t][f] == 'x' or greedy_alloc_RB_i[i][t][f] == 'm' or greedy_alloc_RB_i[i][t][f] != u:
-                        continue
-                    if greedy_alloc_RB_i[j][t][f] == 'x' or greedy_alloc_RB_i[j][t][f] == 'm':
-                        continue
-                    else:
-                        v = greedy_alloc_RB_i[j][t][f]
-                        pair_user_RB[v] += 1
-            #print(pair_user_RB)
-            for v in all_users_i[j]:
-                if pair_user_RB[v] == 0:
-                    continue
-                if i == 0:
-                    print(pair_user_RB[v], 'RB with rate', (rate[i][u] - rate_reduce_ij[u][v]) / 10000, ',(', pair_user_RB[v], '/', greedy_RB_used_i[i][u], ')RB (pair with user', v, ')')
-                    #greedy_sumrate_i[i] -= rate_reduce_ij[u][v] * pair_user_RB[v] / 10000
-                    pass
-                else:
-                    print(pair_user_RB[v], 'RB with rate', (rate[i][u] - rate_reduce_ji[u][v]) / 10000, ',(', pair_user_RB[v], '/', greedy_RB_used_i[i][u], ')RB (pair with user', v, ')')
-                    #greedy_sumrate_i[i] -= rate_reduce_ji[u][v] * pair_user_RB[v] / 10000
-            muting_RB = greedy_RB_used_i[i][u] - sum(pair_user_RB)
-            if muting_RB != 0:
-                print(muting_RB, 'RB with rate', (rate[i][u])/ 10000, ',(', muting_RB, '/', greedy_RB_used_i[i][u], ')RB (muting)')
-                pass
-            #print()
-        print('BS', i, 'sumrate:', round(greedy_sumrate_i[i], 4))
-    print()
-    print('Greedy sumrate =', round(sum(greedy_sumrate_i), 4) )
-
+    
     print()
     print('Comparison')
     for i in all_bs:

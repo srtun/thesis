@@ -7,7 +7,7 @@ import xlrd
 import math
 import os
 
-def _greedy(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji):
+def _greedy_freq(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji):
     # [ ] TODO: 2/27 check wasted RB after all alloc??
     # [ ] TODO: 3/2 comparison unit rb
     # [x] TODO: method which not be taken will waste the traffic demands
@@ -134,8 +134,8 @@ def _greedy(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji):
                         pair_RB_return[0][queue_pair[-1]] += 1
                         pair_RB_return[1][match[0, queue_pair[-1]]] += 1
                 #f = 0
-        print('pair')
-        print(pair_alloc_RB_i)
+        #print('pair')
+        #print(pair_alloc_RB_i)
 
         ## comparison
         ## choose pair users to allcoate
@@ -226,4 +226,11 @@ def _greedy(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji):
                     RB_used_i[i][ alloc_RB_i[i][t][f] ] += 1 
                
     #a = 0
+    #print(alloc_RB_i)
+
+    #transpose alloc_RB_i[i][t][f] into alloc_RB_i[i][f][t]
+    for i in all_bs:
+        alloc_RB_i[i] = list(map(list, zip(*alloc_RB_i[i])))
+        pass 
+    #print(alloc_RB_i)
     return alloc_RB_i, sumrate_i, RB_used_i

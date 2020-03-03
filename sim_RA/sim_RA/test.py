@@ -6,6 +6,8 @@ import math
 import os
 
 def _test(): 
-    s = [6, 3, 1, 4, 5]
-    s2 = sorted(range(len(s)), key=lambda x: s[x])
-    print(s2)
+    l = [[1,2,3],[4,5,6],[7,8,9]]
+    #map(list, zip(*l))
+    r = list(map(list, zip(*l)))
+    print(r)
+    print()

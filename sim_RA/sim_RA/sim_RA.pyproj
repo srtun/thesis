@@ -27,6 +27,9 @@
     <Compile Include="greedy_pilot.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="print_RB.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="setting.py" />
     <Compile Include="sim_RA.py" />
     <Compile Include="test.py" />
