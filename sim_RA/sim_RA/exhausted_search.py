@@ -6,7 +6,7 @@ import xlrd
 import math
 import os
 
-def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, time_threshold):
+def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, traffic_demands, time_threshold):
 
     num_bs, num_subcarriers, num_time_slots, num_users, num_users_i, num_itf_users, itf_idx_i = _setting()
 
@@ -104,6 +104,7 @@ def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
         RB_used_i = []
         sumrate_i = []
         muting_RB_i = []
+        sumrate_bit_i = []
 
         for i in all_bs:
             # print('BS', i)
@@ -111,6 +112,7 @@ def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
             RB_waste_i.append(0)
             RB_used_i.append([0 for u in all_users_i[i]])
             sumrate = 0
+            sumrate_bit = 0
             for f in all_subcarriers:
                 #print('time slot', t)
                 alloc_RB_i[i].append([])
@@ -119,6 +121,7 @@ def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
                         if solver.Value(RB[(i, u, t, f)]) == 1:
                             #print('User', u + i * num_users_i[0], 'is allocated RB',t, f, 'by rate ', rate[i][u] / 10000)
                             sumrate = sumrate + rate[i][u] / 10000
+                            sumrate_bit = sumrate_bit + traffic_demands[i][u] / RB_needed[i][u]
                             alloc_RB_i[i][f].append(u)
                             RB_used_i[i][u] =  RB_used_i[i][u] + 1
                             break
@@ -129,6 +132,7 @@ def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
             #print('BS', i,'sumrate :', round(sumrate, 4))
             #print()
             sumrate_i.append(round(sumrate, 4))
+            sumrate_bit_i.append(sumrate_bit)
         for f in all_subcarriers:
             for t in all_time_slots:
                 #j = (i + 1) % 2
@@ -188,4 +192,4 @@ def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
         '''
         objective_value = solver.ObjectiveValue()
         wall_time = solver.WallTime()
-    return alloc_RB_i, RB_waste_i, RB_used_i, sumrate_i, objective_value, wall_time
+    return alloc_RB_i, RB_waste_i, RB_used_i, sumrate_i, sumrate_bit_i, objective_value, wall_time

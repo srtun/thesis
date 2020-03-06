@@ -27,6 +27,15 @@
     <Compile Include="greedy_pilot.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="rtd_setting2.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="report.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="rate_traffic_demand_setting.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="print_RB.py">
       <SubType>Code</SubType>
     </Compile>

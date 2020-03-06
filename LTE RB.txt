@@ -1,0 +1,7 @@
+12 subcarriers* 7 symbols = 84 resource elements
+7 symbols = 1 slot
+2 slots = 1 subframe
+10 subframe = 1 frame
+
+1 RB 180 kHz
+4*180k =0.72m

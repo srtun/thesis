@@ -6,7 +6,7 @@ import xlrd
 import math
 import os
 
-def _greedy_pilot(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji):
+def _greedy_pilot(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, pilot):
     # [ ] TODO: 2/27 check wasted RB after all alloc??
     # [ ] TODO: 3/2 with pilot number, pair user only choose 1 pair?
     # [ ] TODO: 3/3 itf user need to be added in single queue
@@ -48,8 +48,7 @@ def _greedy_pilot(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
     #sort all user and delete single users
     queue_pair = sorted(range(len(queue_pair)), key=lambda u: queue_pair[u])
     queue_pair = queue_pair[len(queue_pair) - num_itf_users:]
-    #print(queue_pair)
-    
+    #print(queue_pair)    
    
     sumrate_i = [0 for i in all_bs]   
     alloc_RB_i = []
@@ -62,7 +61,7 @@ def _greedy_pilot(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
             alloc_RB_i[i].append(['x' for f in all_subcarriers])
         #alloc_RB_i.append([])
         f = num_subcarriers
-        pilot = 2
+        #pilot = 2
 
         while(f):
             sumrate_single_i = [0 for i in all_bs]      # sumrate of single users in this time slot
