@@ -5,8 +5,9 @@ import math
 import os
 
 def init():
-    global num_itf
-    num_itf = 2
+    #global num_itf_users
+    #num_itf_users = num_itf
+    pass
 
 def _setting():
     book = xlrd.open_workbook('CQI_index.xlsx')
@@ -16,7 +17,7 @@ def _setting():
 
     num_users = 10
 
-    num_itf_users = num_itf
+    #num_itf_users = num_itf
     #num_itf_users = num_users // 4
 
     num_subcarriers = 6
@@ -27,7 +28,6 @@ def _setting():
     #num_users_i.append(4)
     num_users_i.append(num_users - num_users_i[0])
     
-    itf_idx_i = []
     
     all_bs = range(num_bs)
     all_users = range(num_users)
@@ -37,12 +37,16 @@ def _setting():
     for i in all_bs:
         all_users_i.append(range(num_users_i[i]))
 
+    '''
+    itf_idx_i = []
     for i in all_bs:
         itf_idx_i.append([])
         for u in range(num_itf_users):
             itf_idx_i[i].append(num_users_i[i] - 1 - u)
-        itf_idx_i[i].sort();
+        itf_idx_i[i].sort()
 
     #print(itf_idx_i)
+    '''
     
-    return num_bs, num_subcarriers, num_time_slots, num_users, num_users_i, num_itf_users, itf_idx_i
+    #return num_bs, num_subcarriers, num_time_slots, num_users, num_users_i, num_itf_users, itf_idx_i
+    return num_bs, num_subcarriers, num_time_slots, num_users, num_users_i

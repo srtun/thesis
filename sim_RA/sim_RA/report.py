@@ -5,7 +5,9 @@ import numpy as np
 from ortools.sat.python import cp_model
 from setting import _setting
 from rate_traffic_demand_setting import _rate_traffic_demand_setting
-from rtd_setting2 import _rtd_setting2
+#from rtd_setting2 import _rtd_setting2
+import rtd_setting2
+import setting_SIC
 from exhausted_search import _exhausted_search
 from greedy_freq import _greedy_freq
 from greedy_pilot import _greedy_pilot
@@ -27,7 +29,7 @@ def _report():
     #print (mcs_table.row_values(2))
     #print (mcs_table.cell(0,2).value)
 
-    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i, num_itf_users, itf_idx_i = _setting()
+    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i = _setting()
     #print(num_bs)
 
     all_bs = range(num_bs)
@@ -37,8 +39,9 @@ def _report():
     all_users_i = []
     for i in all_bs:
         all_users_i.append(range(num_users_i[i]))
-    
-    traffic_demands, SNR, SNR_db, rate, rate_reduce_ij, rate_reduce_ji, SNR_reduce_ij, SNR_reduce_ji, rate_reduce, rate_pair = _rtd_setting2()
+    #rtd_setting2.init()
+    traffic_demands, SNR, SNR_db, rate = rtd_setting2._rtd_setting2()
+    num_itf_users, itf_idx_i, rate_reduce_ij, rate_reduce_ji, SNR_reduce_ij, SNR_reduce_ji, rate_reduce, rate_pair = setting_SIC._setting_SIC()
 
     # pairing matrix
     Z = [[1 for col in all_users_i[1]] for row in all_users_i[0]]

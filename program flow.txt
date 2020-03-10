@@ -1,0 +1,15 @@
+setting._setting() // set bs number, user number, rb number
+
+
+rtd_setting2.init() // set rate and traffic demands
+    setting._setting()
+
+setting_SIC.set_itf_users() // set itf user number
+
+
+_report() // main program to run report and fig
+    setting()
+    rtd_setting2._rtd_setting2()
+    setting_SIC._setting_SIC()
+
+   
