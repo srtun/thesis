@@ -5,6 +5,8 @@ import numpy as np
 from ortools.sat.python import cp_model
 #from setting import _setting
 import setting
+import rtd_setting2
+import setting_SIC
 from rate_traffic_demand_setting import _rate_traffic_demand_setting
 from exhausted_search import _exhausted_search
 from greedy_freq import _greedy_freq
@@ -37,7 +39,7 @@ def main():
     #print (mcs_table.row_values(2))
     #print (mcs_table.cell(0,2).value)
 
-    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i, num_itf_users, itf_idx_i = setting._setting()
+    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i = setting._setting()
     #print(num_bs)
     
     all_bs = range(num_bs)
@@ -169,7 +171,7 @@ def main():
     '''
 
 if __name__ == '__main__':
-    setting.init()
+    #setting.init()
     #main()
     sumrate = [0 for i in range(5)] 
     single_sumrate = [0 for i in range(5)] 
@@ -177,16 +179,20 @@ if __name__ == '__main__':
     sumrate_bit = [0 for i in range(5)] 
     single_sumrate_bit = [0 for i in range(5)] 
     pairing_sumrate_bit = [0 for i in range(5)] 
-    sim_times = 100
+    
+    sim_times = 20
     itf_percent = 0
-    while itf_percent < 5:
-        t = 0
-        itf_percent += 1
-        print('itf_percent:', itf_percent * 20)
-        setting.num_itf = itf_percent
-        while t < sim_times:
-            t += 1
-            print(t)
+    t = 0 
+
+    while t < sim_times:
+        t += 1
+        print(t)
+        itf_percent = 0
+        rtd_setting2.init()
+        while itf_percent < 5:
+            itf_percent += 1
+            print('itf_percent:', itf_percent * 20)
+            setting_SIC.set_itf_users(itf_percent)
             value, bit = _report()
             sumrate[itf_percent - 1] += value[0]
             single_sumrate[itf_percent - 1] += value[1]
@@ -194,17 +200,20 @@ if __name__ == '__main__':
             sumrate_bit[itf_percent - 1] += bit[0]
             single_sumrate_bit[itf_percent - 1] += bit[1]
             pairing_sumrate_bit[itf_percent - 1] += bit[2]
-        sumrate[itf_percent - 1] /= sim_times
-        single_sumrate[itf_percent - 1] /= sim_times
-        pairing_sumrate[itf_percent - 1] /= sim_times
-        sumrate[itf_percent - 1] *= 0.18 
-        single_sumrate[itf_percent - 1] *= 0.18 
-        pairing_sumrate[itf_percent - 1] *= 0.18 
-        sumrate_bit[itf_percent - 1] /= sim_times * 1000 * 1.5
-        single_sumrate_bit[itf_percent - 1] /= sim_times * 1000 * 1.5
-        pairing_sumrate_bit[itf_percent - 1] /= sim_times * 1000 * 1.5
-        
         os.system('cls')
+    
+    for i in range(len(sumrate)):
+        sumrate[i] /= sim_times
+        single_sumrate[i] /= sim_times
+        pairing_sumrate[i] /= sim_times
+        sumrate[i] *= 0.18 
+        single_sumrate[i] *= 0.18 
+        pairing_sumrate[i] *= 0.18 
+        sumrate_bit[i] /= sim_times * 1000 * 1.5
+        single_sumrate_bit[i] /= sim_times * 1000 * 1.5
+        pairing_sumrate_bit[i] /= sim_times * 1000 * 1.5
+    
+
     algo = ['opt', 'singleton', 'pairing']
     #value = [round(sum(sumrate_i, 2)), round(sum(single_sumrate_i, 2))]
     x = ['20','40','60','80','100']
@@ -220,6 +229,7 @@ if __name__ == '__main__':
     #plt.ylim(0, max(sumrate) + 2)
     plt.legend(fontsize = 20 )
     plt.show()
+
     '''
     algo = ['opt', 'singleton', 'pairing']
     #value = [round(sum(sumrate_i, 2)), round(sum(single_sumrate_i, 2))]

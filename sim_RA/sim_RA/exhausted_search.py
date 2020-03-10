@@ -1,6 +1,7 @@
 from __future__ import print_function
 from ortools.sat.python import cp_model
 from setting import _setting
+import setting_SIC
 import random
 import xlrd
 import math
@@ -8,8 +9,8 @@ import os
 
 def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, traffic_demands, time_threshold):
 
-    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i, num_itf_users, itf_idx_i = _setting()
-
+    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i = _setting()
+    num_itf_users, itf_idx_i, rate_reduce_ij, rate_reduce_ji, SNR_reduce_ij, SNR_reduce_ji, rate_reduce, rate_pair = setting_SIC._setting_SIC()
     all_bs = range(num_bs)
     all_users = range(num_users)
     all_subcarriers = range(num_subcarriers)
