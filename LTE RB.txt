@@ -4,4 +4,4 @@
 10 subframe = 1 frame
 
 1 RB 180 kHz
-4*180k =0.72m
+4*180k =0.72M

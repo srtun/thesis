@@ -13,9 +13,7 @@ def _greedy_pilot(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
     # [x] TODO: method which not be taken will waste the traffic demands
     # [x] TODO: better method may have wasted RB
     # [ ] TODO: pilot check
-    # [ ] TODO: fairness (user fairness?? method fairness??)
-        #by times (same method should't be taken more than x time slots consistently)
-        #by weight (starving method increase the weight)
+    # [ ] TODO: fairness 
     # [ ] TODO: benchmarking algo? baseline
         #random
         #round robin

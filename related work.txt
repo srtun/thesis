@@ -1,0 +1,11 @@
+(group meeting)
+Energy Efficient Resource Allocation in Hybrid Non-Orthogonal Multiple 
+User Pairing for Downlink Non-Orthogonal Multiple Access Networks Using Matching Algorithm
+
+謙仁
+吳老師
+globecom
+
+fairness
+FSSE
+jain's

@@ -19,7 +19,6 @@ import math
 import os
 
 def main(): 
-    # [ ] TODO: independent funtion of random parameter 
     # [x] TODO: ob function bug
     # [x] TODO: rb_needed bug // fix: rb_needed are decided by pair SNR
     # [ ] TODO: num_itf_users may be different
@@ -27,7 +26,6 @@ def main():
     # [ ] TODO: minimum pilot
     # [ ] TODO: different freq, different rate
     # [ ] TODO: real sim deployment
-    # [ ] TODO: generalize??
     
     #_test()
 
@@ -213,7 +211,7 @@ if __name__ == '__main__':
     plt.plot(x, sumrate, label = 'opt', color = 'blue', marker = '^')
     plt.plot(x, single_sumrate, label = 'singleton', color = 'red', marker = 'o')
     plt.plot(x, pairing_sumrate, label = 'pairing', color = 'green', marker = 's')
-    plt.ylabel('sumrate per RB(Mbps)', fontsize = 20)
+    plt.ylabel('sumrate (Mbps)', fontsize = 20)
     plt.xlabel('percentage of interfering UEs(%)', fontsize = 20)
     plt.ylim(ymin = 0)
     plt.xticks(fontsize = 20)
@@ -229,7 +227,7 @@ if __name__ == '__main__':
     plt.plot(x, sumrate_bit, label = 'opt', color = 'blue', marker = '^')
     plt.plot(x, single_sumrate_bit, label = 'singleton', color = 'red', marker = 'o')
     plt.plot(x, pairing_sumrate_bit, label = 'pairing', color = 'green', marker = 's')
-    plt.ylabel('sumrate per RB(Mbps)', fontsize = 20)
+    plt.ylabel('sumrate (Mbps)', fontsize = 20)
     plt.xlabel('percentage of interfering UEs(%)', fontsize = 20)
     plt.ylim(ymin = 0)
     plt.xticks(fontsize = 20)
