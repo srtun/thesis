@@ -58,6 +58,8 @@ def init():
             #rate[i][u] = random.randint(3, 6) * 10000
             #rate[i][u] = 50000
             pass
+    #rate[0][2] = 30000
+    #rate[1][2] = 30000
     #rate[0][3] = 50000
     #rate[1][3] = 50000
     #rate[0][4] = 50000

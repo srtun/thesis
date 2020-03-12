@@ -44,7 +44,7 @@ def _setting_SIC():
             reduce = 0
             if u in itf_idx_i[0] and v in itf_idx_i[1]:
                 reduce = random.randint(5000 , 7500)
-                #reduce = 10000
+                reduce = 10000
 
             rate_reduce_ij[u].append(reduce)
     #print('reduction_ij:')
@@ -58,7 +58,7 @@ def _setting_SIC():
             reduce = 0
             if u in itf_idx_i[0] and v in itf_idx_i[1]:
                 reduce = random.randint(5000 , 7500)
-                #reduce = 10000
+                reduce = 10000
 
             rate_reduce_ji[v].append(reduce)
     #print('reduction_ji:')
