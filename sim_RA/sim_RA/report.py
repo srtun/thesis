@@ -109,7 +109,7 @@ def _report():
     
 
     ## exhausted search (opt)
-    time_threshold = 1.0
+    time_threshold = 5.0
     alloc_RB_i, RB_waste_i, RB_used_i, sumrate_i, sumrate_bit_i, objective_value, wall_time = _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, traffic_demands, time_threshold)
     if round(sum(sumrate_i),4) != objective_value / 10000:
         print('objective function wrong!!')

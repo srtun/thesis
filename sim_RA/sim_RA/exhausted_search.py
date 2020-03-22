@@ -7,7 +7,7 @@ import xlrd
 import math
 import os
 
-def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, traffic_demands, time_threshold):
+def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, traffic_demands, time_threshold, optimal):
 
     num_bs, num_subcarriers, num_time_slots, num_users, num_users_i = _setting()
     num_itf_users, itf_idx_i, rate_reduce_ij, rate_reduce_ji, SNR_reduce_ij, SNR_reduce_ji, rate_reduce, rate_pair = setting_SIC._setting_SIC()
@@ -22,7 +22,8 @@ def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
     # Creates the model
     model = cp_model.CpModel()
     # Creates RB variables.
-    # RB[(u, t, f)]: user u is allocated RB_{f,t}
+    # RB[(u
+    # , t, f)]: user u is allocated RB_{f,t}
     RB = {}
     for i in all_bs:
         for u in all_users_i[i]:
@@ -70,7 +71,7 @@ def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
                     #model.AddBoolOr([RB[(0, u, t, f)].Not(), RB[(1, v, t, f)].Not(), X[(u, v, t, f)]])
                     pass
      
-    # constraits: I_{i,u,f,t} + i_{j,v,f,t} <= X{u,v,f,t} + 1
+    # constraits: I_{i,u,f,t} + i_{j,v,f,t} <= X_{u,v,f,t} + 1
     for u in all_users_i[0]:
         for v in all_users_i[1]:
             for t in all_time_slots:
@@ -92,8 +93,8 @@ def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
    
     solver = cp_model.CpSolver()
     #solver.Solve(model)
-    
-    solver.parameters.max_time_in_seconds = time_threshold
+    if not optimal:
+        solver.parameters.max_time_in_seconds = time_threshold
 
     
     status = solver.Solve(model)

@@ -55,13 +55,21 @@ def init():
     
     for i in all_bs:
         for u in all_users_i[i]:
-            #rate[i][u] = random.randint(3, 6) * 10000
+            rate[i][u] = random.randint(3, 6) * 10000
             #rate[i][u] = 50000
             pass
-    #rate[0][3] = 50000
-    #rate[1][3] = 50000
-    #rate[0][4] = 50000
-    #rate[1][4] = 50000
+    '''
+    rate[0][0] = 50000
+    rate[1][0] = 40000
+    rate[0][1] = 40000
+    rate[1][1] = 60000
+    rate[0][2] = 40000
+    rate[1][2] = 50000
+    rate[0][3] = 50000
+    rate[1][3] = 30000
+    rate[0][4] = 30000
+    rate[1][4] = 30000
+    '''
     #print('rate:')
     #print(rate)
     #print()

@@ -1,15 +1,15 @@
 from __future__ import print_function
 from ortools.sat.python import cp_model
-from setting import _setting
-#from exhausted_search import _exhausted_search
+import setting
+import setting_SIC
 import random
 import xlrd
 import math
 import os
 
 def _greedy_freq(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji):
+    # old version, need to be modified
     # [ ] TODO: 2/27 check wasted RB after all alloc??
-    # [ ] TODO: 3/2 comparison unit rb
     # [x] TODO: method which not be taken will waste the traffic demands
     # [x] TODO: better method may have wasted RB
     # [ ] TODO: pilot check
@@ -20,7 +20,7 @@ def _greedy_freq(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_
         #random
         #round robin
 
-    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i, num_itf_users, itf_idx_i = _setting()
+    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i = setting._setting()
 
     all_bs = range(num_bs)
     all_users = range(num_users)
@@ -29,6 +29,8 @@ def _greedy_freq(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_
     all_users_i = []
     for i in all_bs:
         all_users_i.append(range(num_users_i[i]))
+
+    num_itf_users, itf_idx_i, rate_reduce_ij, rate_reduce_ji, SNR_reduce_ij, SNR_reduce_ji, rate_reduce, rate_pair = setting_SIC._setting_SIC()
 
     #algorithm start
     
@@ -48,7 +50,7 @@ def _greedy_freq(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_
     #sort all user and delete single users
     queue_pair = sorted(range(len(queue_pair)), key=lambda u: queue_pair[u])
     queue_pair = queue_pair[len(queue_pair) - num_itf_users:]
-    print(queue_pair)
+    #print(queue_pair)
     
    
     sumrate_i = [0 for i in all_bs]   

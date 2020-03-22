@@ -22,7 +22,7 @@ p_x = p_x(randperm(length(p_x)))
 % MCS table
 [MCS_value, texting, rawdata] = xlsread('CQI_index.xlsx');
 
-sim_times = 100;
+sim_times = 1000;
 %[rb_total; rb_total_bi; rb_total_random];
 Bw = 1;
 %min_pilo t = 3;  % ??
@@ -873,11 +873,11 @@ X = categorical({'hungarian','random','interference free', 'bipartite', 'heurist
 X = reordercats(X,{'hungarian','random','interference free', 'bipartite', 'heuristic'});
 b = bar(X, Y);
 
-line_SE_h(para) = stat_SE(1);
-line_SE_random(para) = stat_SE(2);
-line_SE_if(para) = stat_SE(3);
-line_SE_bi(para) = stat_SE(4);
-line_SE_heur(para) = stat_SE(5);
+line_SE_h(para) = stat_SE(1) / 500;
+line_SE_random(para) = stat_SE(2) / 500;
+line_SE_if(para) = stat_SE(3) / 500;
+line_SE_bi(para) = stat_SE(4) / 500;
+line_SE_heur(para) = stat_SE(5) / 500;
 
 util_compare = (stat_rb(3) - stat_rb(1)) / stat_rb(3) * 100;
 end
@@ -905,7 +905,7 @@ x=10:10:50;
 %x = categorical(x);
 %a=[203.024;113.857;256.259;244.888;293.376]; % y value
 %b=[334.4,143.2,297.4,487.2,596.2]; % y value
-p = plot(x,line_SE_h,'-*b',x,line_SE_random,'-*r',x,line_SE_if, '--g',x, line_SE_bi, '-*y',x, line_SE_heur, '-*c');
+p = plot(x,line_SE_h,'-*b',x,line_SE_random,'-+r',x,line_SE_if, '--xg',x, line_SE_bi, '-*y',x, line_SE_heur, '-*c');
 p(1).LineWidth = 2;
 p(2).LineWidth = 2;
 p(3).LineWidth = 2;
@@ -938,7 +938,7 @@ x=10:10:50;
 %x = categorical(x);
 %a=[203.024;113.857;256.259;244.888;293.376]; % y value
 %b=[334.4,143.2,297.4,487.2,596.2]; % y value
-p = plot(x,line_rb_h,'-*b',x,line_rb_random,'-*r',x,line_rb_if, '--g',x,line_rb_bi, '-*y',x, line_rb_heur, '-*c');
+p = plot(x,line_rb_h,'-*b',x,line_rb_random,'-+r',x,line_rb_if, '--xg',x,line_rb_bi, '-*y',x, line_rb_heur, '-*c');
 p(1).LineWidth = 2;
 p(2).LineWidth = 2;
 p(3).LineWidth = 2;
@@ -974,7 +974,7 @@ line_avg_rb_heur = line_rb_heur ./ x.';
 %x = categorical(x);
 %a=[203.024;113.857;256.259;244.888;293.376]; % y value
 %b=[334.4,143.2,297.4,487.2,596.2]; % y value
-p = plot(x,line_avg_rb_h,'-*b',x,line_avg_rb_random,'-*r',x,line_avg_rb_if, '--xg',x,line_avg_rb_bi, '-*y',x, line_avg_rb_heur, '-*c');
+p = plot(x,line_avg_rb_h,'-*b',x,line_avg_rb_random,'-+r',x,line_avg_rb_if, '--xg',x,line_avg_rb_bi, '-*y',x, line_avg_rb_heur, '-*c');
 p(1).LineWidth = 2;
 p(2).LineWidth = 2;
 p(3).LineWidth = 2;

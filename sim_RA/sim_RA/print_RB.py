@@ -1,13 +1,15 @@
 from __future__ import print_function
 import matplotlib.pyplot as plt
-from setting import _setting
+#from setting import _setting
+import setting
+import setting_SIC
 import xlrd
 import math
 import os
 
 def _print_RB(alloc_RB_i, RB_needed, rate, rate_reduce_ij, rate_reduce_ji, sumrate_i, algo_name):
 
-    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i, num_itf_users, itf_idx_i = _setting()
+    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i = setting._setting()
     all_bs = range(num_bs)
     all_users = range(num_users)
     all_subcarriers = range(num_subcarriers)
@@ -15,6 +17,11 @@ def _print_RB(alloc_RB_i, RB_needed, rate, rate_reduce_ij, rate_reduce_ji, sumra
     all_users_i = []
     for i in all_bs:
         all_users_i.append(range(num_users_i[i]))
+
+    num_itf_users, itf_idx_i, rate_reduce_ij, rate_reduce_ji, SNR_reduce_ij, SNR_reduce_ji, rate_reduce, rate_pair = setting_SIC._setting_SIC()
+
+    print('-----', algo_name, '-----')
+
 
     muting_RB_i = []
     unallocated_RB = 0

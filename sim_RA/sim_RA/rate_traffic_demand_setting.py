@@ -14,7 +14,7 @@ def _rate_traffic_demand_setting():
     book = xlrd.open_workbook('CQI_index.xlsx')
     mcs_table = book.sheets()[0]
     
-    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i, num_itf_users, itf_idx_i = _setting()
+    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i = _setting()
     #print(num_bs)
     
     all_bs = range(num_bs)
@@ -55,12 +55,14 @@ def _rate_traffic_demand_setting():
     for i in all_bs:
         for u in all_users_i[i]:
             #rate[i][u] = random.randint(3, 6) * 10000
-            #rate[i][u] = 50000
+            rate[i][u] = 50000
             pass
-    #rate[0][3] = 50000
-    #rate[1][3] = 50000
-    #rate[0][4] = 50000
-    #rate[1][4] = 50000
+    rate[0][2] = 30000
+    rate[1][2] = 30000
+    rate[0][3] = 50000
+    rate[1][3] = 50000
+    rate[0][4] = 50000
+    rate[1][4] = 50000
     print('rate:')
     print(rate)
     print()
@@ -71,7 +73,7 @@ def _rate_traffic_demand_setting():
             reduce = 0
             if u in itf_idx_i[0] and v in itf_idx_i[1]:
                 reduce = random.randint(5000 , 7500)
-                #reduce = 10000
+                reduce = 10000
 
             rate_reduce_ij[u].append(reduce)
     print('reduction_ij:')
@@ -85,7 +87,7 @@ def _rate_traffic_demand_setting():
             reduce = 0
             if u in itf_idx_i[0] and v in itf_idx_i[1]:
                 reduce = random.randint(5000 , 7500)
-                #reduce = 10000
+                reduce = 10000
 
             rate_reduce_ji[v].append(reduce)
     print('reduction_ji:')
