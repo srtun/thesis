@@ -31,7 +31,7 @@ def init():
     for i in all_bs:
         traffic_demands.append([]) 
         for u in all_users_i[i]:
-            traffic_demands[i].append(random.randint(500, 1000) * 10 // 8) 
+            traffic_demands[i].append(random.randint(500, 1500) * 10 // 12) 
 
     SNR = []  
     for i in all_bs:
@@ -55,7 +55,7 @@ def init():
     
     for i in all_bs:
         for u in all_users_i[i]:
-            rate[i][u] = random.randint(3, 6) * 10000
+            #rate[i][u] = random.randint(3, 6) * 10000
             #rate[i][u] = 50000
             pass
     '''

@@ -9,10 +9,9 @@ import math
 import os
 
 def set_itf_users(num_itf):
-    global num_itf_users
+    global num_itf_users, itf_idx_i, rate_reduce_ij, rate_reduce_ji, SNR_reduce_ij, SNR_reduce_ji, rate_reduce, rate_pair
     num_itf_users = num_itf
 
-def _setting_SIC():
     # read mcs table file
     book = xlrd.open_workbook('CQI_index.xlsx')
     mcs_table = book.sheets()[0]
@@ -60,10 +59,10 @@ def _setting_SIC():
             reduce = 0
             if u in itf_idx_i[0] and v in itf_idx_i[1]:
                 reduce = random.randint(5000 , 7500)
-                reduce = 5000
+                #reduce = 5000
                 if u == v:
                     reduce = random.randint(4000, 5000)
-                    reduce = 5000
+                    #reduce = 5000
             rate_reduce_ji[v].append(reduce)
     #print('reduction_ji:')
     #print(rate_reduce_ji)
@@ -119,6 +118,9 @@ def _setting_SIC():
     #print(rate_pair)
     #print()
 
+
+def _setting_SIC():
+    
     return num_itf_users, itf_idx_i, rate_reduce_ij, rate_reduce_ji, SNR_reduce_ij, SNR_reduce_ji, rate_reduce, rate_pair
 
 

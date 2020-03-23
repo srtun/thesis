@@ -59,11 +59,12 @@ def main():
     t = 0
     while t < sim_times:
         t += 1
-        print(t)
+        #print(t)
         itf_percent = 0
         rtd_setting2.init()
         while itf_percent < 5:
             itf_percent += 1
+            print(t)
             print('itf_percent:', itf_percent * 20)
             setting_SIC.set_itf_users(itf_percent)
             
@@ -126,33 +127,45 @@ def main():
             #print(RB_needed)       
             for i in all_bs:
                 for u in all_users_i[i]:
-                    RB_needed[i][u] = random.randint(3, 7)
+                    #RB_needed[i][u] = random.randint(3, 7)
                     #RB_needed[i][u] = 6
                     pass
             '''
-            RB_needed[0][0] = 5
-            RB_needed[1][0] = 7
+            RB_needed[0][0] = 3
+            RB_needed[1][0] = 4
             RB_needed[0][1] = 3
-            RB_needed[1][1] = 6  
-            RB_needed[0][2] = 5
-            RB_needed[1][2] = 6
-            RB_needed[0][3] = 3
-            RB_needed[1][3] = 7
-            RB_needed[0][4] = 4
-            RB_needed[1][4] = 4
+            RB_needed[1][1] = 3  
+            RB_needed[0][2] = 3
+            RB_needed[1][2] = 2
+            RB_needed[0][3] = 5
+            RB_needed[1][3] = 3
+            RB_needed[0][4] = 3
+            RB_needed[1][4] = 2
             '''
             #print('RB_needed: ')
             #print(RB_needed) 
-            time_threshold = 10.0
+            time_threshold = 30.0
             #-----------------------------------------------------------------------
             ## exhausted search
-            alloc_RB_i, RB_waste_i, RB_used_i, sumrate_i, sumrate_bit_i, objective_value, wall_time = _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, traffic_demands, time_threshold, False)
+            alloc_RB_i, RB_waste_i, RB_used_i, sumrate_i, sumrate_bit_i, objective_value, wall_time, status = _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, traffic_demands, time_threshold, False)
             if round(sum(sumrate_i),4) != objective_value / 10000:
                 print('objective function wrong!!')
             #print('exhausted')
             #print(alloc_RB_i)
-    
+            print('--------------------------------')
+            print(status)
+            print('Wall time:', round(wall_time))
+            print('--------------------------------')
             _print_RB(alloc_RB_i, RB_needed, rate, rate_reduce_ij, rate_reduce_ji, sumrate_i, 'exhausted search')
+            #-----------------------------------------------------------------------
+            ## greedy algorithm (pilot)
+            RB_needed_cp = deepcopy(RB_needed)
+            pilot = 2
+            greedy_alloc_RB_i, greedy_sumrate_i, greedy_RB_used_i = _greedy_pilot(match, RB_needed_cp, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, pilot)
+            _print_RB(greedy_alloc_RB_i, RB_needed, rate, rate_reduce_ij, rate_reduce_ji, greedy_sumrate_i, 'greedy_pilot')
+            #print('greedy:')
+            #print(greedy_alloc_RB_i)
+            
             #------------------------------------------------------------------------    
             ## exhausted search interference-free
             # pairing matrix
@@ -163,16 +176,8 @@ def main():
                 for j in all_users_i[1]:
                     if i in itf_idx_i[0] or j in itf_idx_i[1]:
                         Z_itf_free[i][j] = 0
-            if_alloc_RB_i, if_RB_waste_i, if_RB_used_i, if_sumrate_i, if_sumrate_bit_i, if_objective_value, if_wall_time = _exhausted_search(Z_itf_free, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, traffic_demands, time_threshold, False)
-            _print_RB(if_alloc_RB_i, RB_needed, rate, rate_reduce_ij, rate_reduce_ji, if_sumrate_i, 'interference free')
-            #-----------------------------------------------------------------------
-            ## greedy algorithm (pilot)
-            RB_needed_cp = deepcopy(RB_needed)
-            pilot = 2
-            greedy_alloc_RB_i, greedy_sumrate_i, greedy_RB_used_i = _greedy_pilot(match, RB_needed_cp, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, pilot)
-            _print_RB(greedy_alloc_RB_i, RB_needed, rate, rate_reduce_ij, rate_reduce_ji, greedy_sumrate_i, 'greedy_pilot')
-            #print('greedy:')
-            #print(greedy_alloc_RB_i)
+            if_alloc_RB_i, if_RB_waste_i, if_RB_used_i, if_sumrate_i, if_sumrate_bit_i, if_objective_value, if_wall_time, if_status = _exhausted_search(Z_itf_free, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, traffic_demands, time_threshold, False)
+            #_print_RB(if_alloc_RB_i, RB_needed, rate, rate_reduce_ij, rate_reduce_ji, if_sumrate_i, 'interference free')
 
             #-----------------------------------------------------------------------
             ## greedy algorithm (freq)
@@ -182,7 +187,7 @@ def main():
             ## Comparison between different RA algorithm
             
             print()
-            print('Comparison')
+            print('------Comparison--------')
             '''
             for i in all_bs:
                 print()
@@ -198,9 +203,10 @@ def main():
             print('interference free', round(sum(if_sumrate_i), 4))
             #print('Greedy_freq:', round(sum(greedy_f_sumrate_i), 4))
             print()
-            print('Wall time:', round(wall_time))
-            if round(sum(sumrate_i), 4) < round(sum(greedy_sumrate_i), 4):
+            
+            if round(sum(sumrate_i), 4) < round(sum(greedy_sumrate_i), 4) and status == 'optimal':
                 os.system('pause')
+                pass
             
 
             opt_sumrate[itf_percent - 1] += round(sum(sumrate_i), 4)
@@ -217,6 +223,7 @@ def main():
             plt.show()
             print()
             '''
+            #break
         os.system('cls')
     for i in range(len(opt_sumrate)):
         opt_sumrate[i] /= sim_times

@@ -98,6 +98,22 @@ def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
 
     
     status = solver.Solve(model)
+    stat = ''
+    if status == cp_model.OPTIMAL:
+        #print('optimal')
+        stat = 'optimal'
+    if status == cp_model.FEASIBLE:
+        #print('feasible')
+        stat = 'feasible'
+    if status == cp_model.INFEASIBLE:
+        #print('infeasible')
+        stat = 'infeasible'
+    if status == cp_model.MODEL_INVALID:
+        #print('model invalid')
+        stat = 'model invalid'
+    if status == cp_model.UNKNOWN:
+        #print('unknown')
+        stat = 'unknown'
 
     if 1:
     #if status == cp_model.FEASIBLE:
@@ -194,4 +210,4 @@ def _exhausted_search(Z, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
         '''
         objective_value = solver.ObjectiveValue()
         wall_time = solver.WallTime()
-    return alloc_RB_i, RB_waste_i, RB_used_i, sumrate_i, sumrate_bit_i, objective_value, wall_time
+    return alloc_RB_i, RB_waste_i, RB_used_i, sumrate_i, sumrate_bit_i, objective_value, wall_time, stat
