@@ -281,9 +281,9 @@ def main():
     #plt.scatter(algo, sumrate)
     #plt.ylim(0, max(sumrate) + 2)
     plt.legend(fontsize = 20 )
+    #plt.show()
+    plt.savefig('proportion.png', dpi = 200 , bbox_inches='tight')
     plt.show()
-    plt.savefig('proportion.png')
-
 
 if __name__ == '__main__':
     #setting.init()
