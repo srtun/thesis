@@ -30,6 +30,12 @@
     <Compile Include="greedy_pilot_fix.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="greedy_merge.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="greedy_muting.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="setting_SIC.py">
       <SubType>Code</SubType>
     </Compile>
