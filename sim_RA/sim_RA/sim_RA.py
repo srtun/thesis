@@ -2,6 +2,7 @@ from __future__ import print_function
 from copy import deepcopy
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats as stats
 from ortools.sat.python import cp_model
 #from setting import _setting
 import setting
@@ -59,22 +60,36 @@ def main():
     greedy_if_sumrate = [0 for i in range(5)] 
     greedy_merge_sumrate = [0 for i in range(5)] 
 
-    sim_times = 1
+    mode_type = ['itf_percentage', 'td distribution']
+    mode = mode_type[0]
+
+    sim_times = 50
     t = 0
     while t < sim_times:
         t += 1
         #print(t)
-        itf_percent = 0
-        rtd_setting2.init()
-        while itf_percent < 5:
-            itf_percent += 1
-
+        sim_parameter = 0
+        if mode == mode_type[0]:
+            itf_percent = 0
+            lo = 200
+            mean = 1100
+            rtd_setting2.init(mean, lo) 
+        elif mode == mode_type[1]:
+            pass
+        while sim_parameter < 5:
+            if mode == mode_type[0]: 
+                itf_percent += 1
+            elif mode == mode_type[1]:
+                itf_percent = 2
+                lo = 200
+                mean = [500, 700, 900, 1100, 1300]
+                rtd_setting2.init(mean[sim_parameter], lo) 
             '''
             print(t)
             print('itf_percent:', itf_percent * 20)
             '''
             setting_SIC.set_itf_users(itf_percent)
-            
+            sim_parameter += 1
 
             #setting_SIC.set_itf_users(num_users // 5) # 20%
             #traffic_demands, SNR, SNR_db, rate, rate_reduce_ij, rate_reduce_ji, SNR_reduce_ij, SNR_reduce_ji, rate_reduce, rate_pair = _rate_traffic_demand_setting()
@@ -134,7 +149,7 @@ def main():
             #print(RB_needed)       
             for i in all_bs:
                 for u in all_users_i[i]:
-                    RB_needed[i][u] = random.randint(3, 7)
+                    #RB_needed[i][u] = random.randint(3, 7)
                     #RB_needed[i][u] = 6
                     pass
             '''
@@ -150,9 +165,9 @@ def main():
             RB_needed[1][4] = 2
             '''
             #print('RB_needed: ')
-            #print(RB_needed) 
-
-            time_threshold = 20.0
+            print(RB_needed) 
+            #break
+            time_threshold = 10.0
 
             #-----------------------------------------------------------------------
             ## optimal solution
@@ -190,6 +205,7 @@ def main():
             #------------------------------------------------------------------------    
             ## exhausted search interference-free
             # pairing matrix
+            RB_needed_cp = deepcopy(RB_needed)
             Z_itf_free = [[1 for col in all_users_i[1]] for row in all_users_i[0]]
             #print (Z)
             for i in all_users_i[0]:
@@ -197,19 +213,25 @@ def main():
                 for j in all_users_i[1]:
                     if i in itf_idx_i[0] or j in itf_idx_i[1]:
                         Z_itf_free[i][j] = 0
-            if_alloc_RB_i, if_RB_waste_i, if_RB_used_i, if_sumrate_i, if_sumrate_bit_i, if_objective_value, if_wall_time, if_status = _exhausted_search(Z_itf_free, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, traffic_demands, time_threshold, False)
+            if_alloc_RB_i, if_RB_waste_i, if_RB_used_i, if_sumrate_i, if_sumrate_bit_i, if_objective_value, if_wall_time, if_status = _exhausted_search(Z_itf_free, RB_needed_cp, rate, rate_pair, rate_reduce_ij, rate_reduce_ji, traffic_demands, time_threshold, False)
             #_print_RB(if_alloc_RB_i, RB_needed, rate, rate_reduce_ij, rate_reduce_ji, if_sumrate_i, 'interference free')
 
             #------------------------------------------------------------------------    
             ## greedy interference-free (muting)
-            greedy_if_alloc_RB_i, greedy_if_sumrate_i, greedy_if_RB_used_i = _greedy_muting(RB_needed, rate)
+            RB_needed_cp = deepcopy(RB_needed)
+            greedy_if_alloc_RB_i, greedy_if_sumrate_i, greedy_if_RB_used_i = _greedy_muting(RB_needed_cp, rate)
             
 
             ## Comparison between different RA algorithm
-            
-            os.system('cls')
+            if round(sum(sumrate_i), 4) >= round(sum(greedy_m_sumrate_i), 4):
+                os.system('cls')
             print('sim times:', t)
-            print('itf_percent:', itf_percent * 20)
+            if mode == mode_type[0]:
+                print('itf_percent:', itf_percent * 20)
+            elif mode == mode_type[1]:
+                print('mean:', mean[sim_parameter - 1])
+            #print('RB_needed')
+            #print(RB_needed)
             print('------Comparison--------')
             '''
             for i in all_bs:
@@ -220,26 +242,29 @@ def main():
                 print('Greedy_freq:', round(greedy_f_sumrate_i[i], 4))
             '''
             #print()
-            print('total sumrate')
+            print('Total sumrate')
             print('Exhausted search:', round(sum(sumrate_i), 4), '(', status, ')')
-            print('Greedy merge', round(sum(greedy_m_sumrate_i), 4))
+            print('Greedy merge:', round(sum(greedy_m_sumrate_i), 4))
             print('Greedy pilot:', round(sum(greedy_pair_sumrate_i), 4))
-            print('interference free', round(sum(if_sumrate_i), 4))
+            print('interference free:', round(sum(if_sumrate_i), 4))
             #print('Greedy muting', round(sum(greedy_if_sumrate_i), 4))
             #print('Greedy_freq:', round(sum(greedy_f_sumrate_i), 4))
             print('------------------------')
+            if round(sum(sumrate_i), 4) < round(sum(greedy_m_sumrate_i), 4):
+                #os.system('pause')
+                pass
             
             if round(sum(sumrate_i), 4) < round(sum(greedy_pair_sumrate_i), 4) and status == 'optimal':
                 #os.system('pause')
                 pass
             
 
-            opt_sumrate[itf_percent - 1] += round(sum(sumrate_i), 4)
-            pair_sumrate[itf_percent - 1] += round(sum(greedy_pair_sumrate_i), 4)
+            opt_sumrate[sim_parameter - 1] += round(sum(sumrate_i), 4)
+            pair_sumrate[sim_parameter - 1] += round(sum(greedy_pair_sumrate_i), 4)
             #freq_sumrate[itf_percent - 1] += round(sum(greedy_f_sumrate_i), 4)
-            if_sumrate[itf_percent - 1] += round(sum(if_sumrate_i), 4)
-            greedy_if_sumrate[itf_percent - 1] += round(sum(greedy_if_sumrate_i), 4)
-            greedy_merge_sumrate[itf_percent - 1] += round(sum(greedy_m_sumrate_i), 4)
+            if_sumrate[sim_parameter - 1] += round(sum(if_sumrate_i), 4)
+            greedy_if_sumrate[sim_parameter - 1] += round(sum(greedy_if_sumrate_i), 4)
+            greedy_merge_sumrate[sim_parameter - 1] += round(sum(greedy_m_sumrate_i), 4)
             ## plot
             '''
             algo = ['exhausted', 'greedy_pilot', 'greedy_freq']
@@ -265,16 +290,19 @@ def main():
         greedy_if_sumrate[i] *= 0.18 
         greedy_merge_sumrate[i] *= 0.18 
 
-    algo = ['opt', 'pair', 'if', 'greedy_if', 'greedy_merge']
+    algo = ['opt', 'pair', 'if', 'greedy_if', 'greedy']
     #value = [round(sum(sumrate_i, 2)), round(sum(single_sumrate_i, 2))]
     x = ['20','40','60','80','100']
-    plt.plot(x, opt_sumrate, label = 'opt', color = 'blue', marker = '^')
+    plt.plot(x, opt_sumrate, label = 'optimal', color = 'blue', linewidth = 3 , marker = '^')
     plt.plot(x, pair_sumrate, label = 'pair', color = 'red', linewidth = 3 ,marker = 'o')
-    plt.plot(x, if_sumrate, label = 'if', color = 'green', marker = 's')
+    plt.plot(x, if_sumrate, label = 'interference free', color = 'cyan',linewidth = 3 , marker = 's')
     #plt.plot(x, greedy_if_sumrate, label = 'greedy_if', color = 'yellow', marker = 'x')
-    plt.plot(x, greedy_merge_sumrate, label = 'greedy_merge', color = 'cyan', marker = '+')
+    plt.plot(x, greedy_merge_sumrate, label = 'greedy', color = 'green',linewidth = 3 , marker = 'D')
     plt.ylabel('sumrate(Mbps)', fontsize = 20)
-    plt.xlabel('percentage of interfering UEs(%)', fontsize = 20)
+    if mode == mode_type[0]:
+        plt.xlabel('percentage of interfering UEs(%)', fontsize = 20)
+    elif mode == mode_type[1]:
+        plt.xlabel('mean of traffic demands(bits)', fontsize = 20)
     plt.ylim(ymin = 0)
     plt.xticks(fontsize = 20)
     plt.yticks(fontsize = 20)
@@ -282,13 +310,35 @@ def main():
     #plt.ylim(0, max(sumrate) + 2)
     plt.legend(fontsize = 20 )
     #plt.show()
-    plt.savefig('proportion.png', dpi = 200 , bbox_inches='tight')
+    if mode == mode_type[0]:
+        plt.savefig('proportion.png', dpi = 200 , bbox_inches='tight')
+    elif mode == mode_type[1]:
+        plt.savefig('traffic_demand.png', dpi = 200 , bbox_inches='tight')
     plt.show()
 
 if __name__ == '__main__':
     #setting.init()
     #main()
+    
+    
+    '''
+    mu = 0
+    variance = 1
+    sigma = math.sqrt(variance)
+    x = np.linspace(mu - 3*sigma, mu + 3*sigma, 100)
+    print(stats.norm.pdf(x, mu, sigma))
+    plt.plot(x, stats.norm.pdf(x, mu, sigma))
+    plt.show()
+    '''
+    '''
+    mean = 1000 
+    std = 100
+    array = np.random.normal(mean, std, 1000) 
+    print(array)
 
+    count, bins, ignored = plt.hist(array, 30, normed=True) 
+    plt.show() 
+    '''
 
     main()
 

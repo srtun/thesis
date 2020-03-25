@@ -1,6 +1,7 @@
 from __future__ import print_function
 import matplotlib.pyplot as plt
 from ortools.sat.python import cp_model
+import numpy as np
 from setting import _setting
 import random
 import xlrd
@@ -9,7 +10,7 @@ import os
 
 # [ ] TODO: RB_needed?
 
-def init():
+def init(mean, lo):
     global traffic_demands, SNR, SNR_db, rate
     
     book = xlrd.open_workbook('CQI_index.xlsx')
@@ -31,7 +32,13 @@ def init():
     for i in all_bs:
         traffic_demands.append([]) 
         for u in all_users_i[i]:
-            traffic_demands[i].append(random.randint(300, 1500) * 10 // 12) 
+            td = random.randint(300, 1500) * 10 // 12
+            #mean = 1000 
+            #std = 100
+            sigma = (mean - lo) / 3
+            td = np.random.normal(mean, sigma) 
+            #td = 1100
+            traffic_demands[i].append(td) 
 
     SNR = []  
     for i in all_bs:

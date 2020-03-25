@@ -138,8 +138,8 @@ def _greedy_merge(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
             RB_idx = [muting_RB_idx_i[0][merge_pair][-1] ,muting_RB_idx_i[1][ match[0, merge_pair]][-1] ]
             t = RB_idx[1] // num_subcarriers
             f = RB_idx[1] % num_subcarriers
-            muting_RB_idx_i[0][merge_pair].pop()
-            muting_RB_idx_i[1][match[0, merge_pair]].pop()
+            #muting_RB_idx_i[0][merge_pair].pop()
+            #muting_RB_idx_i[1][match[0, merge_pair]].pop()
 
             print('merge_pair:')
             print(merge_pair)
@@ -228,14 +228,18 @@ def _greedy_merge(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
         #----- case merge to allocate
         elif merge_pair != -1:
             print('Case merge')
+            if not sumrate_single and not sumrate_itf:
+                break
             #----- choose single user to allocate
-            if sumrate_single >= sumrate_itf:
+            elif sumrate_single >= sumrate_itf:
                 for i in all_bs:
                     if queue_single_i[i]:
                         alloc_RB_i[i][t][f] = queue_single_i[i][-1]
                         RB_needed[i][queue_single_i[i][-1]] -= 1
                         if RB_needed[i][queue_single_i[i][-1]] == 0:
                             queue_single_i[i].pop()
+                    else: 
+                        alloc_RB_i[i][t][f] = 'x'
 
             #----- choose interfering user to allocate
             else:
@@ -255,6 +259,8 @@ def _greedy_merge(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
             t = RB_idx[0] // num_subcarriers
             f = RB_idx[0] % num_subcarriers 
             alloc_RB_i[1][t][f] = match[0, merge_pair]
+            muting_RB_idx_i[0][merge_pair].pop()
+            muting_RB_idx_i[1][match[0, merge_pair]].pop()
 
     sumrate_i = [0 for i in all_bs]
     sumrate_RB_i = [[0 for r in range(num_subcarriers * num_time_slots)] for i in all_bs]
@@ -294,8 +300,8 @@ def _greedy_merge(match, RB_needed, rate, rate_pair, rate_reduce_ij, rate_reduce
                 break
         if u == -1:
             break
-        sumrate_pair = rate_pair[u][match[0, u]] /10000
-        sumrate_min = min(sumrate_RB)
+        sumrate_pair = round(rate_pair[u][match[0, u]] / 10000, 4)
+        sumrate_min = round(min(sumrate_RB), 4)
         if sumrate_pair > sumrate_min:
             min_RB_idx = sumrate_RB.index(min(sumrate_RB))
             print('min_RB_idx:', min_RB_idx)
