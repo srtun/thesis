@@ -61,7 +61,7 @@ def main():
     greedy_merge_sumrate = [0 for i in range(5)] 
 
     mode_type = ['itf_percentage', 'td distribution']
-    mode = mode_type[0]
+    mode = mode_type[1]
 
     sim_times = 50
     t = 0
@@ -293,6 +293,9 @@ def main():
     algo = ['opt', 'pair', 'if', 'greedy_if', 'greedy']
     #value = [round(sum(sumrate_i, 2)), round(sum(single_sumrate_i, 2))]
     x = ['20','40','60','80','100']
+    if mode == mode_type[1]:
+        for i in range(len(x)):
+            x[i] = str(mean[i]) 
     plt.plot(x, opt_sumrate, label = 'optimal', color = 'blue', linewidth = 3 , marker = '^')
     plt.plot(x, pair_sumrate, label = 'pair', color = 'red', linewidth = 3 ,marker = 'o')
     plt.plot(x, if_sumrate, label = 'interference free', color = 'cyan',linewidth = 3 , marker = 's')
