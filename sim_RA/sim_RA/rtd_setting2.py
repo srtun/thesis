@@ -8,10 +8,9 @@ import xlrd
 import math
 import os
 
-# [ ] TODO: RB_needed?
-
-def init(mean, lo):
-    global traffic_demands, SNR, SNR_db, rate
+# [ ] 3/26 TODO: separate td and rate 
+def set_traffic_demand(mean, lo):
+    global traffic_demands
     
     book = xlrd.open_workbook('CQI_index.xlsx')
     mcs_table = book.sheets()[0]
@@ -39,6 +38,25 @@ def init(mean, lo):
             td = np.random.normal(mean, sigma) 
             #td = 1100
             traffic_demands[i].append(td) 
+
+def set_rate():
+    global SNR, SNR_db, rate
+    
+    book = xlrd.open_workbook('CQI_index.xlsx')
+    mcs_table = book.sheets()[0]
+    
+    #num_bs, num_subcarriers, num_time_slots, num_users, num_users_i, num_itf_users, itf_idx_i = _setting()
+    num_bs, num_subcarriers, num_time_slots, num_users, num_users_i = _setting()
+
+    all_bs = range(num_bs)
+    all_users = range(num_users)
+    all_subcarriers = range(num_subcarriers)
+    all_time_slots = range(num_time_slots)
+    all_users_i = []
+    
+    for i in all_bs:
+        all_users_i.append(range(num_users_i[i]))
+
 
     SNR = []  
     for i in all_bs:
@@ -80,6 +98,7 @@ def init(mean, lo):
     #print('rate:')
     #print(rate)
     #print()
+
 
 def _rtd_setting2():
 

@@ -63,17 +63,18 @@ def main():
     mode_type = ['itf_percentage', 'td distribution']
     mode = mode_type[1]
 
-    sim_times = 50
+    sim_times = 5
     t = 0
     while t < sim_times:
         t += 1
         #print(t)
         sim_parameter = 0
+        rtd_setting2.set_rate()
         if mode == mode_type[0]:
             itf_percent = 0
             lo = 200
             mean = 1100
-            rtd_setting2.init(mean, lo) 
+            rtd_setting2.set_traffic_demand(mean, lo) 
         elif mode == mode_type[1]:
             pass
         while sim_parameter < 5:
@@ -83,7 +84,7 @@ def main():
                 itf_percent = 2
                 lo = 200
                 mean = [500, 700, 900, 1100, 1300]
-                rtd_setting2.init(mean[sim_parameter], lo) 
+                rtd_setting2.set_traffic_demand(mean[sim_parameter], lo) 
             '''
             print(t)
             print('itf_percent:', itf_percent * 20)
