@@ -24,7 +24,7 @@ import xlrd
 import math
 import os
 
-def main(): 
+def main(sim_times, mode_idx, exp): 
     # [x] TODO: rb_needed bug // fix: rb_needed are decided by pair SNR
     # [ ] TODO: num_itf_users may be different
 
@@ -61,9 +61,9 @@ def main():
     greedy_merge_sumrate = [0 for i in range(5)] 
 
     mode_type = ['itf_percentage', 'td distribution']
-    mode = mode_type[1]
+    mode = mode_type[mode_idx]
 
-    sim_times = 5
+    #sim_times = 1
     t = 0
     while t < sim_times:
         t += 1
@@ -73,7 +73,7 @@ def main():
         if mode == mode_type[0]:
             itf_percent = 0
             lo = 200
-            mean = 1100
+            mean = exp
             rtd_setting2.set_traffic_demand(mean, lo) 
         elif mode == mode_type[1]:
             pass
@@ -291,6 +291,21 @@ def main():
         greedy_if_sumrate[i] *= 0.18 
         greedy_merge_sumrate[i] *= 0.18 
 
+    #
+    data = [[] for i in range(4)]
+    
+    data[0] = opt_sumrate
+    data[1] = greedy_merge_sumrate
+    data[2] = pair_sumrate
+    data[3] = if_sumrate
+    if mode == mode_type[0]:
+        filename =  'sim1_exp=' + exp.str() + 'data.dat'                                                                                                                                
+        np.savetxt(filename, data)
+    elif mode == mode_type[1]:
+        filename = 'sim2_data.dat'
+        np.savetxt(filename, data)
+    #np.savetxt("sim1_data.dat",data)
+
     algo = ['opt', 'pair', 'if', 'greedy_if', 'greedy']
     #value = [round(sum(sumrate_i, 2)), round(sum(single_sumrate_i, 2))]
     x = ['20','40','60','80','100']
@@ -315,6 +330,7 @@ def main():
     plt.legend(fontsize = 20 )
     #plt.show()
     if mode == mode_type[0]:
+        #txt = 'proportion' 
         plt.savefig('proportion.png', dpi = 200 , bbox_inches='tight')
     elif mode == mode_type[1]:
         plt.savefig('traffic_demand.png', dpi = 200 , bbox_inches='tight')
@@ -323,8 +339,9 @@ def main():
 if __name__ == '__main__':
     #setting.init()
     #main()
-    
-    
+    #arr = [0, 1, 2]
+    #np.savetxt("arr.dat",arr)
+
     '''
     mu = 0
     variance = 1
@@ -343,8 +360,11 @@ if __name__ == '__main__':
     count, bins, ignored = plt.hist(array, 30, normed=True) 
     plt.show() 
     '''
-
-    main()
+    sim_times = 100
+    main(0, sim_times, 700)
+    main(0, sim_times, 1100)
+    main(1, sim_times, 0)
+    
 
     '''
     sumrate = [0 for i in range(5)] 
