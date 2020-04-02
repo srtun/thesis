@@ -19,12 +19,13 @@ from print_RB import _print_RB
 #from test import _test
 import test
 from report import _report
+from datetime import date
 import random
 import xlrd
 import math
 import os
 
-def main(sim_times, mode_idx, exp): 
+def main(mode_idx, sim_times, exp): 
     # [x] TODO: rb_needed bug // fix: rb_needed are decided by pair SNR
     # [ ] TODO: num_itf_users may be different
 
@@ -298,11 +299,17 @@ def main(sim_times, mode_idx, exp):
     data[1] = greedy_merge_sumrate
     data[2] = pair_sumrate
     data[3] = if_sumrate
+
+    today = date.today()
+    d = today.strftime("%m%d")
+    path = 'C:\\Users\\srtun\\Desktop\\thesis\\user pairing\\'
+
     if mode == mode_type[0]:
-        filename =  'sim1_exp=' + exp.str() + 'data.dat'                                                                                                                                
+        exp_str = str(exp)
+        filename = path + 'sim1_exp=' + exp_str + '_' + d + '.dat'                                                                                                                                
         np.savetxt(filename, data)
     elif mode == mode_type[1]:
-        filename = 'sim2_data.dat'
+        filename = path + 'sim2_' + d + '.dat'
         np.savetxt(filename, data)
     #np.savetxt("sim1_data.dat",data)
 
@@ -334,7 +341,7 @@ def main(sim_times, mode_idx, exp):
         plt.savefig('proportion.png', dpi = 200 , bbox_inches='tight')
     elif mode == mode_type[1]:
         plt.savefig('traffic_demand.png', dpi = 200 , bbox_inches='tight')
-    plt.show()
+    #plt.show()
 
 if __name__ == '__main__':
     #setting.init()
@@ -360,7 +367,8 @@ if __name__ == '__main__':
     count, bins, ignored = plt.hist(array, 30, normed=True) 
     plt.show() 
     '''
-    sim_times = 100
+
+    sim_times = 1
     main(0, sim_times, 700)
     main(0, sim_times, 1100)
     main(1, sim_times, 0)
