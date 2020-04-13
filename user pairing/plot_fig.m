@@ -6,17 +6,21 @@ clc
 
 formatOut = 'mmdd';
 today = datestr(now,formatOut)
+today = '0409'
 data_num = 3
 fig = 0
 while fig < data_num
     fig = fig + 1;
     if fig == 1
         exp = int2str(700)
+        %today = '0405'
         filename = strcat('sim1_exp=', exp, '_', today, '.dat')
     elseif fig == 2
         exp = int2str(1100)
+        %today = '0405'
         filename = strcat('sim1_exp=', exp, '_', today, '.dat')
     elseif fig == 3
+        %today = '0406'
         filename = strcat('sim2_', today, '.dat')
     end
     data = importdata(filename)
@@ -41,7 +45,7 @@ while fig < data_num
 
     xlim([x(1), x(5)]);
     set(gca,'XTick',x, 'FontSize', 24);
-    ylim([0, inf]);
+    ylim([0, max(data(1,:) + 2)]);
     set(gca, 'FontSize', 24);
     x_label_text = ["percentage of interfering UEs(%)";"expectation of traffic demand (bits)"];
     y_label_text = ["sum rate (Mbps)";"sum rate (Mbps)"];
