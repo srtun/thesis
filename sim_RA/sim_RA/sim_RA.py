@@ -54,6 +54,13 @@ def main(mode_idx, sim_times, exp):
     for i in all_bs:
         all_users_i.append(range(num_users_i[i]))
     
+    opt_similar = [0 for i in range(5)] 
+    pair_similar = [0 for i in range(5)] 
+    #freq_similar = [0 for i in range(5)] 
+    if_similar = [0 for i in range(5)] 
+    #greedy_if_sumrate = [0 for i in range(5)] 
+    greedy_merge_similar = [0 for i in range(5)] 
+
     opt_sumrate = [0 for i in range(5)] 
     pair_sumrate = [0 for i in range(5)] 
     freq_sumrate = [0 for i in range(5)] 
@@ -143,7 +150,7 @@ def main(mode_idx, sim_times, exp):
                     snr = SNR[i][u] - reduce
                     snr_db = 10 *  math.log(snr, 10)
                     for idx in range(1, mcs_table.nrows):
-                        if snr_db < mcs_table.cell(idx, 4).value:
+                        if snr_db <= mcs_table.cell(idx, 4).value:
                             rb = traffic_demands[i][u] / (mcs_table.cell(idx - 1, 3).value * 84)
                             RB_needed[i].append(math.ceil(rb))
                             break
@@ -167,7 +174,7 @@ def main(mode_idx, sim_times, exp):
             RB_needed[1][4] = 2
             '''
             #print('RB_needed: ')
-            print(RB_needed) 
+            #print(RB_needed) 
             #break
             time_threshold = 10.0
 
@@ -223,8 +230,23 @@ def main(mode_idx, sim_times, exp):
             RB_needed_cp = deepcopy(RB_needed)
             greedy_if_alloc_RB_i, greedy_if_sumrate_i, greedy_if_RB_used_i = _greedy_muting(RB_needed_cp, rate)
             
-
-            ## Comparison between different RA algorithm
+            ## similarity of allocated RB
+            greedy_m_similar_RB_i = [0 for i in all_bs]
+            greedy_pair_similar_RB_i = [0 for i in all_bs]
+            if_similar_RB_i = [0 for i in all_bs]
+            
+            for i in all_bs:
+                for u in all_users_i[i]:
+                    greedy_m_similar_RB_i[i] += min(RB_used_i[i][u], greedy_m_RB_used_i[i][u])
+                    greedy_pair_similar_RB_i[i] += min(RB_used_i[i][u], greedy_pair_RB_used_i[i][u])
+                    if_similar_RB_i[i] += min(RB_used_i[i][u], if_RB_used_i[i][u])
+                greedy_m_similar_RB_i[i] += num_subcarriers * num_time_slots - max(sum(RB_used_i[i]), sum(greedy_m_RB_used_i[i]))
+                greedy_pair_similar_RB_i[i] += num_subcarriers * num_time_slots - max(sum(RB_used_i[i]), sum(greedy_pair_RB_used_i[i]))
+                if_similar_RB_i[i] += num_subcarriers * num_time_slots - max(sum(RB_used_i[i]), sum(if_RB_used_i[i]))
+                greedy_m_similar_RB_i[i] /= num_subcarriers * num_time_slots
+                greedy_pair_similar_RB_i[i] /= num_subcarriers * num_time_slots 
+                if_similar_RB_i[i] /= num_subcarriers * num_time_slots 
+            ##Performance comparison between different RA algorithm
             if round(sum(sumrate_i), 4) >= round(sum(greedy_m_sumrate_i), 4):
                 os.system('cls')
             print('sim times:', t)
@@ -243,11 +265,11 @@ def main(mode_idx, sim_times, exp):
                 print('Greedy_pilot:', round(greedy_sumrate_i[i], 4))
                 print('Greedy_freq:', round(greedy_f_sumrate_i[i], 4))
             '''
-            #print()
-            print('Total sumrate')
+            print('------------------------')
+            print('Total Sumrate')
             print('Exhausted search:', round(sum(sumrate_i), 4), '(', status, ')')
             print('Greedy merge:', round(sum(greedy_m_sumrate_i), 4))
-            print('Greedy pilot:', round(sum(greedy_pair_sumrate_i), 4))
+            print('Greedy pair:', round(sum(greedy_pair_sumrate_i), 4))
             print('interference free:', round(sum(if_sumrate_i), 4))
             #print('Greedy muting', round(sum(greedy_if_sumrate_i), 4))
             #print('Greedy_freq:', round(sum(greedy_f_sumrate_i), 4))
@@ -260,6 +282,26 @@ def main(mode_idx, sim_times, exp):
                 #os.system('pause')
                 pass
             
+            print('------------------------')
+            print('Similarity')
+            for i in all_bs:
+                print('BS', i, 'similarity')
+                #print('Exhausted search:', round(sum(sumrate_i), 4), '(', status, ')')
+                print('Greedy merge:', round(greedy_m_similar_RB_i[i], 4))
+                print('Greedy pair:', round(greedy_pair_similar_RB_i[i], 4))
+                print('interference free:', round(if_similar_RB_i[i], 4))
+            print('total similarity')
+            print('Greedy merge:', round(sum(greedy_m_similar_RB_i) / num_bs, 4))
+            print('Greedy pair:', round(sum(greedy_pair_similar_RB_i) / num_bs, 4))
+            print('interference free:', round(sum(if_similar_RB_i) / num_bs, 4))
+            print('------------------------')
+
+            #opt_similar[sim_parameter - 1] += round(sum(sumrate_i), 4)
+            pair_similar[sim_parameter - 1] += sum(greedy_pair_similar_RB_i) / num_bs
+            #freq_sumrate[itf_percent - 1] += round(sum(greedy_f_sumrate_i), 4)
+            if_similar[sim_parameter - 1] += sum(if_similar_RB_i) / num_bs
+            #greedy_if_sumrate[sim_parameter - 1] += round(sum(greedy_if_sumrate_i), 4)
+            greedy_merge_similar[sim_parameter - 1] += sum(greedy_m_similar_RB_i) / num_bs
 
             opt_sumrate[sim_parameter - 1] += round(sum(sumrate_i), 4)
             pair_sumrate[sim_parameter - 1] += round(sum(greedy_pair_sumrate_i), 4)
@@ -312,7 +354,7 @@ def main(mode_idx, sim_times, exp):
         filename = path + 'sim2_' + d + '.dat'
         np.savetxt(filename, data)
     #np.savetxt("sim1_data.dat",data)
-
+    '''
     algo = ['opt', 'pair', 'if', 'greedy_if', 'greedy']
     #value = [round(sum(sumrate_i, 2)), round(sum(single_sumrate_i, 2))]
     x = ['20','40','60','80','100']
@@ -335,13 +377,48 @@ def main(mode_idx, sim_times, exp):
     #plt.scatter(algo, sumrate)
     #plt.ylim(0, max(sumrate) + 2)
     plt.legend(fontsize = 20 )
+    #plt.show() 
+    if mode == mode_type[0]:
+        #txt = 'proportion' 
+        #plt.savefig('proportion.png', dpi = 200 , bbox_inches='tight')
+        pass
+    elif mode == mode_type[1]:
+        #plt.savefig('traffic_demand.png', dpi = 200 , bbox_inches='tight')
+        pass
+    #plt.show()
+    '''
+    algo = ['opt', 'pair', 'if', 'greedy_if', 'greedy']
+    #value = [round(sum(sumrate_i, 2)), round(sum(single_sumrate_i, 2))]
+    x = ['20','40','60','80','100']
+    if mode == mode_type[1]:
+        for i in range(len(x)):
+            x[i] = str(mean[i]) 
+    #plt.plot(x, opt_similar, label = 'optimal', color = 'blue', linewidth = 3 , marker = '^')
+    plt.plot(x, pair_similar, label = 'pair', color = 'red', linewidth = 3 ,marker = 'o')
+    plt.plot(x, if_similar, label = 'interference free', color = 'cyan',linewidth = 3 , marker = 's')
+    #plt.plot(x, greedy_if_sumrate, label = 'greedy_if', color = 'yellow', marker = 'x')
+    plt.plot(x, greedy_merge_similar, label = 'greedy', color = 'green',linewidth = 3 , marker = 'D')
+    plt.ylabel('sumrate(Mbps)', fontsize = 20)
+    if mode == mode_type[0]:
+        plt.xlabel('percentage of interfering UEs(%)', fontsize = 20)
+    elif mode == mode_type[1]:
+        plt.xlabel('mean of traffic demands(bits)', fontsize = 20)
+    plt.ylim(ymin = 0)
+    plt.xticks(fontsize = 20)
+    plt.yticks(fontsize = 20)
+    #plt.scatter(algo, sumrate)
+    #plt.ylim(0, max(sumrate) + 2)
+    plt.legend(fontsize = 20)
     #plt.show()
     if mode == mode_type[0]:
         #txt = 'proportion' 
-        plt.savefig('proportion.png', dpi = 200 , bbox_inches='tight')
+        #plt.savefig('proportion.png', dpi = 200 , bbox_inches='tight')
+        pass
     elif mode == mode_type[1]:
-        plt.savefig('traffic_demand.png', dpi = 200 , bbox_inches='tight')
+        #plt.savefig('traffic_demand.png', dpi = 200 , bbox_inches='tight')
+        pass
     #plt.show()
+
 
 if __name__ == '__main__':
     #setting.init()
@@ -368,8 +445,8 @@ if __name__ == '__main__':
     plt.show() 
     '''
 
-    sim_times = 1
-    main(0, sim_times, 700)
+    sim_times = 1000
+    #main(0, sim_times, 700)
     main(0, sim_times, 1100)
     main(1, sim_times, 0)
     

@@ -62,9 +62,8 @@ def set_rate():
     for i in all_bs:
         SNR.append([]) 
         for u in all_users_i[i]:
-            SNR[i].append(random.randint(11, 90))
+            SNR[i].append(random.randint(5, 100))
     #print(SNR)
-
     SNR_db = []
     for i in all_bs:
         SNR_db.append([]) 

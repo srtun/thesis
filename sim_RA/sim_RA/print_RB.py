@@ -22,7 +22,7 @@ def _print_RB(alloc_RB_i, RB_needed, rate, rate_reduce_ij, rate_reduce_ji, sumra
 
     print('-----', algo_name, '-----')
 
-
+    orthogonal_alloc_i = [[0 for u in all_users_i[i]] for i in all_bs]
     muting_RB_i = []
     unallocated_RB = 0
     RB_waste_i = [0 for i in all_bs]
@@ -50,6 +50,7 @@ def _print_RB(alloc_RB_i, RB_needed, rate, rate_reduce_ij, rate_reduce_ji, sumra
                         if alloc_RB_i[j][f][t] == u:
                             muting_RB_i[i] += 1
                             alloc_RB_i[i][f][t] = 'm'
+                            orthogonal_alloc_i[j][u] += 1
                             break
                 print(alloc_RB_i[i][f][t],' ' , sep = '',end = '')
             print()
